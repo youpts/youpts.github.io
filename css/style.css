@@ -1,0 +1,84 @@
+body {
+	background-color: #333333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+label {
+	color: #9cdcfe;
+}
+.container {
+	width: 1060px;
+	margin: 0 auto;
+	padding: 0;
+	/* border: 1px dashed green; */
+	text-align: center;
+}
+#constructor {
+	/* border: 1px solid #808080; */
+	margin-bottom: 30px;
+}
+h1 {
+	width: 640px;
+	font: 26px Arial, sans-serif;
+	color: #007acc;
+	font-weight: bold;
+	/* border: 1px dashed purple; */
+	margin: 0 auto;
+	margin-bottom: 30px;
+}
+.configure {
+	/* border: 1px dashed red; */
+	color: #9cdcfe;
+	margin-bottom: 30px;
+	text-align: left;
+	line-height: 30px;
+}
+.edit-field {
+	font-size: 12px;
+	color: #dcdcaa;
+	background-color: #3c3c3c;
+	border: 0;
+
+	width: 70px;
+	text-align: right;
+}
+#num-pillars {
+	color: white;
+}
+.button {
+	display: inline-block;
+	line-height: 22px;
+	padding-left: 10px;
+	padding-right: 10px;
+
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	text-transform: uppercase;
+	background-color: #1e1e1e;
+
+}
+.button:hover {
+	background-color: #252526;
+}
+.button:active {
+	background-color: #151513;
+}
+.but-build {
+	background-color: #00b770;
+}
+.but-build:hover {
+	background-color: #00a666;
+}
+.config-pillars {
+	/* border: 1px dashed red; */
+}
+.config-pillars .number {
+	color: white;
+	font-size: 14px;
+}
+.but {
+	width: 70px;
+	line-height: 26px;
+}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ALT 110 (tested)</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Офисные перегородки ALT 110</h1>
+        <div class="configure" id="conf">
+            <label for="config-width">Width:</label>
+            <input type="text" id="config-width" class="edit-field">
+            <label for="config-height">Height:</label>
+            <input type="text" id="config-height" class="edit-field"> <a href="#" class="button but-build">Build</a><br>
+            <div class="config-pillars">
+                <span class="label">Number of pillars:</span>
+                <span class="number" id="number-pillars">0</span>
+                <a href="#" class="button" onclick="addPillar()">+</a>
+                <a href="#" class="button" onclick="removePillar()">-</a>
+                <a href="#" class="button" onclick="arrangePillars()">Arrange</a>
+            </div>
+        </div>
+        <canvas id="constructor" width="800" height="600"></canvas>
+    </div>
+    <script src="app/app.js"></script>
+</body>
+
+</html>
