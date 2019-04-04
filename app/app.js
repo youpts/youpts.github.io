@@ -3,10 +3,10 @@ var ctx = canvas.getContext('2d');
 var cellSize = 10;
 
 var struct = {
-	width: 5000,
-	height: 2250,
-	pillars: [0, 1500, 2375, 3250, 4125, 5000],
-	beams: [[0, 200], [0, 2250], [0, 2250], [0, 2250], [0, 2250]]
+	width: 0,
+	height: 0,
+	pillars: [],
+	beams: [[],]
 }
 
 function drawField(canvas, ctx) {
@@ -91,6 +91,8 @@ function updateNumberPillars() {
 }
 
 function updateScene() {
+	clearExactConfig();
+	genExactConfig();
 	updateNumberPillars();
 	drawField(canvas, ctx);
 	drawStruct(canvas, ctx, struct);
@@ -124,7 +126,7 @@ function addPillar() {
 	var indexLast = struct.pillars.length - 1;
 	var last = struct.pillars[indexLast];
 	var penult = struct.pillars[indexLast - 1];
-	struct.pillars[indexLast] = (last - penult) / 2 + penult;
+	struct.pillars[indexLast] = Math.round((last - penult) / 2 + penult);
 	struct.pillars.push(last);
 	struct.beams.push(struct.beams[struct.beams.length - 1]);
 	updateScene();
@@ -136,86 +138,40 @@ function arrangePillars() {
 	struct.pillars = [];
 
 	for (var i = 0; i <= numSpans; i++) {
-		struct.pillars.push(i * step);
+		struct.pillars.push(Math.round(i * step));
 	}
-	console.log(struct.pillars);
-	console.log(struct.beams);
 	updateScene();
 }
 
+function clearExactConfig() {
+	var elExactConfig = document.getElementById("exact-config");
+	elExactConfig.innerHTML = '';
+}
+
+function genExactConfig() {
+	var elExactConfig = document.getElementById("exact-config");
+	
+	for (var i = 1; i < struct.pillars.length - 1; i++) {
+		var elPillarLabel = document.createElement('span');
+		elPillarLabel.className = 'label';
+		elPillarLabel.innerHTML = 'Pillar ' + (i + 1) + '. x: ';
+		
+		var elEditXPillar = document.createElement('input');
+		elEditXPillar.className = 'edit-field';
+		elEditXPillar.id = 'pillar' + (i + 1);
+		elEditXPillar.value = struct.pillars[i];
+
+		var elApply = document.createElement('a');
+		elApply.setAttribute('href', '#');
+		elApply.className = 'button';
+		elApply.innerText = 'Apply';
+
+
+		elExactConfig.appendChild(elPillarLabel);
+		elExactConfig.appendChild(elEditXPillar);
+		elExactConfig.appendChild(elApply);
+		elExactConfig.appendChild(document.createElement('br'));
+	}
+}
+
 updateScene();
-
-// function toBuild() {
-// 	var width = document.getElementById("make-width");
-// 	var height = document.getElementById("make-height");
-// 	alert(width.value);
-// 	alert(height.value);
-// }
-
-// function minPillars() {
-// 	var numberOfPillars = document.getElementById("number-pillars");
-// 	var value = +numberOfPillars.value;
-// 	if (value <= 2) {
-// 		numberOfPillars.value = 5;
-// 	} else {
-// 		numberOfPillars.value = numberOfPillars.value;	
-// 	}
-// }
-
-// function checkNumberPillars() {
-// 	var numbPillars = document.getElementById("num-pillars");
-// 	numberPillars = +numbPillars.value;
-// 	if (numberPillars < 2) {
-// 		numberPillars = 2;
-// 		numbPillars.value = 2;
-// 	}
-// }
-
-// function pillarsApply() {
-
-
-// 	numberPillars = +numberOfPillars.value;
-// 	// document.'make-settings'.parentNode.removeChild(numberOfPillars);
-// 	drawElementsPillars();
-
-// 	numberOfPillars.value = numberPillars;
-// 	console.log(numberPillars);
-// }
-
-// function clearElementsPillars() {
-// 	var elFilling = document.getElementsByClassName('filling');
-// 	if (elFilling.length > 2) {
-// 		for (var i = 0; i < elFilling.length; i++) {
-// 			console.log(elFilling[i]);
-// 			elFilling[i].remove();
-// 		}
-// 	} else {
-// 		elFilling[0].remove();
-// 	}
-// }
-
-// function drawElementsPillars() {
-// 	var butBuild = document.getElementById("but-build");
-
-// 	clearElementsPillars();
-
-// 	if (numberPillars < 2) {
-// 		numberPillars = 2;
-// 	}
-
-// 	for (var i = 0; i < numberPillars - 1; i++) {
-// 		var elPillar = document.createElement('div');
-// 		elPillar.className = 'filling';
-// 		var elTitle = document.createElement('span');
-// 		elTitle.className = 'fillTitle';
-// 		elTitle.innerHTML = 'Filling ' + (i + 1) + ':';
-
-// 		elPillar.appendChild(elTitle);
-
-// 		var elConf = document.getElementById('conf');
-// 		elConf.insertBefore(elPillar, butBuild);
-// 	}
-// }
-
-// checkNumberPillars();
-// drawElementsPillars();
