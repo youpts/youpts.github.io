@@ -148,6 +148,18 @@ function clearExactConfig() {
 	elExactConfig.innerHTML = '';
 }
 
+function changeApply(obj) {
+	var num = '';
+	for (var i = 6; i < obj.id.length; i++) {
+		num += obj.id[i];
+	}
+
+	var elEditField = document.getElementById('editXPillar' + num);
+
+	struct.pillars[num - 1] = +elEditField.value;
+	updateScene();
+}
+
 function genExactConfig() {
 	var elExactConfig = document.getElementById("exact-config");
 	
@@ -158,11 +170,13 @@ function genExactConfig() {
 		
 		var elEditXPillar = document.createElement('input');
 		elEditXPillar.className = 'edit-field';
-		elEditXPillar.id = 'pillar' + (i + 1);
+		elEditXPillar.id = 'editXPillar' + (i + 1);
 		elEditXPillar.value = struct.pillars[i];
 
 		var elApply = document.createElement('a');
+		elApply.id = 'pillar' + (i + 1);
 		elApply.setAttribute('href', '#');
+		elApply.setAttribute('onclick', 'changeApply(this)');
 		elApply.className = 'button';
 		elApply.innerText = 'Apply';
 
