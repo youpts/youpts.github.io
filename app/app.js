@@ -96,6 +96,18 @@ function updateScene() {
 	drawStruct(canvas, ctx, struct);
 }
 
+function toBuild() {
+	var elWidth = document.getElementById("config-width");
+	var elHeight = document.getElementById("config-height");
+	if (elWidth.value && elHeight.value) {
+		struct.width = +elWidth.value;
+		struct.height = +elHeight.value;
+		struct.pillars = [0, struct.width];
+		struct.beams = [[0, struct.height],];
+		updateScene();
+	}
+}
+
 function removePillar() {
 	if (struct.pillars.length > 2) {
 		var lastPillars = struct.pillars.pop();
