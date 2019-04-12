@@ -1,13 +1,36 @@
 var canvas = document.getElementById('constructor');
 var ctx = canvas.getContext('2d');
 var cellSize = 10;
+var padding = 10;
 
+// Структура хранения позиции точек ригелей
+// [[[a.y, b.y], [a.y, b.y], [a.y, b.y], [a.y, b.y], ...], [[a.y, b.y], [a.y, b.y], [a.y, b.y], [a.y, b.y], ...], ...]
+// a.y - высота точки А. b.y - высота точки В
+// Стуктура хранения позиций стоек по Х
 var struct = {
-	width: 0,
-	height: 0,
-	pillars: [],
-	beams: [[],]
+	width: 1500,
+	height: 1500,
+	pillars: [0, 1500],
+	beams: [[[0, 0], [100, 300], [1500, 1500]],]
 }
+
+// Параметры профилей
+profileRack = {
+	vendorCode: 'AYPC.110.0301',
+	depth: 67,
+	width: 37,
+	sizeB: 18.5,
+}
+
+// Система профилей
+alt110 = {
+	racks: profileRack,
+	beams: profileRack,
+}
+profileSystem = alt110;
+profsys = profileSystem;
+// Цвета профиля
+profsys.color = '#999999';
 
 function drawField(canvas, ctx) {
 	var w = canvas.width;
@@ -40,7 +63,7 @@ function drawField(canvas, ctx) {
 	ctx.restore();
 }
 
-// padding в процентах с одной стороны
+// padding отступ в процентах с одной стороны
 function getScale(canvas, struct, padding) {
 	if (struct.width > struct.height) {
 		return (canvas.width - (canvas.width * (padding / 100)) * 2) / struct.width;
@@ -49,9 +72,67 @@ function getScale(canvas, struct, padding) {
 	}
 }
 
-function drawStruct(canvas, ctx, struct) {
+function drawProfRack(ctx, x, y, w, h) {
+	ctx.save();
+	ctx.fillStyle = profsys.color;
+	ctx.strokeStyle = '#000000';
+	ctx.fillRect(Math.round(x) + 0.5, Math.round(y) + 0.5, w, h);
+	ctx.strokeRect(Math.round(x) + 0.5, Math.round(y) + 0.5, w, h);
+	ctx.restore();
+}
+function drawProfBeam(ctx, scale, profile, a, b) {
+	ctx.save();
+	ctx.fillStyle = '#999999';
+	ctx.strokeStyle = '#000000';
+	ctx.beginPath();
+	ctx.moveTo(Math.round(a.x + profile.sizeB * scale) + 0.5, Math.round(a.y - profile.sizeB * scale) + 0.5);
+	ctx.lineTo(Math.round(b.x - profile.sizeB * scale) + 0.5, Math.round(b.y - profile.sizeB * scale) + 0.5);
+	ctx.lineTo(Math.round(b.x - profile.sizeB * scale) + 0.5, Math.round(b.y + profile.sizeB * scale) + 0.5);
+	ctx.lineTo(Math.round(a.x + profile.sizeB * scale) + 0.5, Math.round(a.y + profile.sizeB * scale) + 0.5);
+	ctx.lineTo(Math.round(a.x + profile.sizeB * scale) + 0.5, Math.round(a.y - profile.sizeB * scale) + 0.5);
+	ctx.fill();
+	ctx.stroke();
+	ctx.restore();
+}
 
-	var padding = 10;
+function drawProfileSystem(canvas, ctx) {
+	var scale = getScale(canvas, struct, padding);
+	var paddingLeft = struct.width > struct.height ? canvas.width * (padding / 100) : (canvas.width - (struct.width * scale)) / 2;
+	var paddingTop = struct.width < struct.height ? canvas.height * (padding / 100) : (canvas.height - (struct.height * scale)) / 2;
+
+	for (var i = 0; i < struct.pillars.length; i++) {
+		var x = (struct.pillars[i] * scale) + paddingLeft;
+		var y = paddingTop;
+		var w = profsys.racks.width * scale;
+		var h = (struct.height * scale);
+		if (i == 0) {
+			drawProfRack(ctx, x, y, w, h);
+		} else if (i == struct.pillars.length - 1) {
+			drawProfRack(ctx, x - w, y, w, h);
+		} else {
+			drawProfRack(ctx, x - (profsys.racks.sizeB * scale), y, w, h);
+		}
+	}
+
+	for (var i = 0; i < struct.beams.length; i++) {
+		var a = { x: (struct.pillars[i] * scale) + paddingLeft };
+		if (i == 0) { a.x = ((struct.pillars[i] + profsys.beams.sizeB) * scale) + paddingLeft; }
+
+		var b = { x: (struct.pillars[i + 1] * scale) + paddingLeft };
+		if (i == struct.beams.length - 1) {b.x = ((struct.pillars[i + 1] - profsys.beams.sizeB) * scale) + paddingLeft;} 
+
+		for (var j = 0; j < struct.beams[i].length; j++) {
+			var offsetY = 0;
+			if (j == 0) {offsetY += profsys.beams.sizeB}
+			if (j == struct.beams[i].length - 1) {offsetY -= profsys.beams.sizeB}
+			a.y = ((struct.beams[i][j][0] + offsetY) * scale) + paddingTop;
+			b.y = ((struct.beams[i][j][1] + offsetY) * scale) + paddingTop;
+			drawProfBeam(ctx, scale, profsys.beams, a, b);
+		}
+	}
+}
+
+function drawStruct(canvas, ctx, struct) {
 	var scale = getScale(canvas, struct, padding);
 	var paddingLeft = struct.width > struct.height ? canvas.width * (padding / 100) : (canvas.width - (struct.width * scale)) / 2;
 	var paddingTop = struct.width < struct.height ? canvas.height * (padding / 100) : (canvas.height - (struct.height * scale)) / 2;
@@ -67,7 +148,8 @@ function drawStruct(canvas, ctx, struct) {
 		var x2 = (struct.pillars[i + 1] * scale) + paddingLeft;
 
 		for (var j = 0; j < struct.beams[i].length; j++) {
-			var y1 = y2 = (struct.beams[i][j] * scale) + paddingTop;
+			var y1 = (struct.beams[i][j][0] * scale) + paddingTop;
+			var y2 = (struct.beams[i][j][1] * scale) + paddingTop;
 			drawAxisLine(ctx, x1, y1, x2, y2);
 		}
 
@@ -77,7 +159,7 @@ function drawStruct(canvas, ctx, struct) {
 function drawAxisLine(ctx, x1, y1, x2, y2) {
 	ctx.save();
 	ctx.setLineDash([5, 4]);
-	ctx.strokeStyle = '#ce9178';
+	ctx.strokeStyle = '#1aff1a';
 	ctx.beginPath();
 	ctx.moveTo(Math.round(x1) + 0.5, Math.round(y1) + 0.5);
 	ctx.lineTo(Math.round(x2) + 0.5, Math.round(y2) + 0.5);
@@ -95,6 +177,7 @@ function updateScene() {
 	genExactConfig();
 	updateNumberPillars();
 	drawField(canvas, ctx);
+	drawProfileSystem(canvas, ctx);
 	drawStruct(canvas, ctx, struct);
 }
 
@@ -105,7 +188,7 @@ function toBuild() {
 		struct.width = +elWidth.value;
 		struct.height = +elHeight.value;
 		struct.pillars = [0, struct.width];
-		struct.beams = [[0, struct.height],];
+		struct.beams = [[[0, 0], [struct.height, struct.height]]];
 		updateScene();
 	}
 }
@@ -128,7 +211,7 @@ function addPillar() {
 	var penult = struct.pillars[indexLast - 1];
 	struct.pillars[indexLast] = Math.round((last - penult) / 2 + penult);
 	struct.pillars.push(last);
-	struct.beams.push(struct.beams[struct.beams.length - 1]);
+	struct.beams.push([[0, 0], [struct.height, struct.height]]);
 	updateScene();
 }
 
@@ -162,12 +245,12 @@ function changeApply(obj) {
 
 function genExactConfig() {
 	var elExactConfig = document.getElementById("exact-config");
-	
+
 	for (var i = 1; i < struct.pillars.length - 1; i++) {
 		var elPillarLabel = document.createElement('span');
 		elPillarLabel.className = 'label';
 		elPillarLabel.innerHTML = 'Pillar ' + (i + 1) + '. x: ';
-		
+
 		var elEditXPillar = document.createElement('input');
 		elEditXPillar.className = 'edit-field';
 		elEditXPillar.id = 'editXPillar' + (i + 1);
